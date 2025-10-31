@@ -97,21 +97,21 @@ INSERT INTO Producto (productname, price, stock, estado, talla, categoryid, bran
 ('Polera Adidas Essentials', 69.90, 40, TRUE, 'M', 2, 2, 'https://i.postimg.cc/CKBVg693/adidas-essentials.jpg'),
 ('Jogger Nike Club Fleece', 95.50, 10, TRUE, 'L', 2, 1, 'https://i.postimg.cc/B6TkZWpc/nike-club-fleece.jpg'),
 ('Hoodie Puma Lifestyle', 85.00, 12, TRUE, 'XL', 2, 4, 'https://i.postimg.cc/FzPP1hLJ/puma-hoodie.jpg'),
-('Zapatillas Nike Air Max', 350.00, 18, TRUE, '42', 3, 1, ''),
-('Zapatillas Adidas Ultraboost', 399.99, 10, TRUE, '41', 3, 2, ''),
-('Zapatillas Reebok Classic', 280.00, 22, TRUE, '43', 3, 6, ''),
-('Zapatillas New Balance 574', 320.00, 15, TRUE, '40', 3, 7, ''),
-('Zapato de vestir Dr. Martens 1461', 450.00, 5, TRUE, '42', 4, 8, ''),
-('Zapato de cuero formal Umbro Style', 299.99, 7, TRUE, '41', 4, 5, ''),
-('Pulsera Pandora Moments', 250.00, 14, TRUE, 'Ajustable', 5, 9, ''),
-('Pulsera Pandora Rose Gold', 280.00, 8, TRUE, 'Pequeña', 5, 9, ''),
-('Collar Tiffany & Co. Heart Tag', 750.00, 3, TRUE, 'Único', 6, 10, ''),
-('Collar Tiffany & Co. Bean Design', 890.00, 2, TRUE, 'Único', 6, 10, ''),
-('Collar Pandora Plateado Clásico', 199.99, 6, TRUE, 'Ajustable', 6, 9, '');
+('Zapatillas Nike Air Max', 350.00, 18, TRUE, '42', 3, 1, 'https://i.postimg.cc/V6DXrH1S/nike-air-max.jpg'),
+('Zapatillas Adidas Ultraboost', 399.99, 10, TRUE, '41', 3, 2, 'https://i.postimg.cc/4dmpcQ30/adidas-ultraboost.jpg'),
+('Zapatillas Reebok Classic', 280.00, 22, TRUE, '43', 3, 6, 'https://i.postimg.cc/L6H606t6/reebok-classic.jpg'),
+('Zapatillas New Balance 574', 320.00, 15, TRUE, '40', 3, 7, 'https://i.postimg.cc/K83X0dHZ/new-balance-574.jpg'),
+('Zapato de vestir Dr. Martens 1461', 450.00, 5, TRUE, '42', 4, 8, 'https://i.postimg.cc/VN53J2Xg/martens-1461.jpg'),
+('Zapato de cuero formal Umbro Style', 299.99, 7, TRUE, '41', 4, 5, 'https://i.postimg.cc/XNy4HBGt/umbro-style.jpg'),
+('Pulsera Pandora Moments', 250.00, 14, TRUE, 'Ajustable', 5, 9, 'https://i.postimg.cc/BQskTjxH/pandora-moments.jpg'),
+('Pulsera Pandora Rose Gold', 280.00, 8, TRUE, 'Pequeña', 5, 9, 'https://i.postimg.cc/jqNYQVmM/pandora-rose-gold.jpg'),
+('Collar Tiffany & Co. Heart Tag', 750.00, 3, TRUE, 'Único', 6, 10, 'https://i.postimg.cc/xd4Vg99x/tifany-heart-tag.jpg'),
+('Collar Tiffany & Co. Bean Design', 890.00, 2, TRUE, 'Único', 6, 10, 'https://i.postimg.cc/Dw7hwCCC/tiffany-bean-design.jpg'),
+('Collar Pandora Plateado Clásico', 199.99, 6, TRUE, 'Ajustable', 6, 9, 'https://i.postimg.cc/SKXvSCpT/collar-pandora-clasico.jpg');
 
 -- Inserción de datos para la seguridad
 INSERT INTO rol (nomrol) VALUES ('ADMIN'), ('USER');
-INSERT INTO usuario (nomusuario, email, password, nombres, apellidos, activo) VALUES ('admin', 'admin@cibertec.pe', '$2a$12$D2PdDKiRv1d7OBpAfzjSwuF1Burk49h3BYuYwTXvYb6jaDgOQ/jj.', 'Admin', 'User', 1);
+INSERT INTO usuario (nomusuario, email, password, nombres, apellidos, activo) VALUES ('admin', 'admin@cibertec.pe', '$2a$10$mpqZVNWi1x6zwPCt2V9LCeSurFlQBMVzNHnBmobOqNbG4bpwMkzwK', 'Admin', 'User', 1);
 INSERT INTO usuario_rol (idusuario, idrol) VALUES (1, 1);
 
 -- --- VERIFICACIÓN DE DATOS ---
@@ -122,3 +122,42 @@ FROM
 SELECT * FROM usuario;
 SELECT * FROM rol;
 SELECT * FROM usuario_rol;
+
+
+-- 7. Tabla Orden (para guardar la cabecera de la compra)
+CREATE TABLE orden (
+    order_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATETIME NOT NULL,
+    shipping_address VARCHAR(255) NOT NULL,
+    customer_name VARCHAR(255) NOT NULL,
+    total_amount DECIMAL(10,2) NOT NULL
+    -- Puedes añadir un 'idusuario' FK aquí si quieres ligarlo al usuario
+    -- , idusuario INT,
+    -- FOREIGN KEY (idusuario) REFERENCES usuario(idusuario)
+);
+
+-- 8. Tabla Detalle_Orden (para guardar los productos de la compra)
+CREATE TABLE detalle_orden (
+    detail_id INT PRIMARY KEY AUTO_INCREMENT,
+    quantity INT NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    order_id INT,
+    productid INT,
+    FOREIGN KEY (order_id) REFERENCES orden(order_id),
+    FOREIGN KEY (productid) REFERENCES producto(productid)
+);
+
+
+-- 1. Verifica el Stock
+-- Debería mostrar 'stock: 24' (bajó de 25)
+SELECT productname, stock FROM producto WHERE productid = 1;
+select * from producto;
+-- 2. Verifica la Orden
+-- Debería mostrar 1 fila nueva con tu nombre y el total
+SELECT * FROM orden;
+
+-- 3. Verifica el Detalle
+-- Debería mostrar 1 fila nueva ligada a la orden
+SELECT * FROM detalle_orden;
+
+
